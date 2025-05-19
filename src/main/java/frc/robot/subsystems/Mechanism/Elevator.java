@@ -33,12 +33,12 @@ public class Elevator extends SubsystemBase {
         }
     }
 
-    public void changeLevel() {
-        if (level == 0) {
-            level = 1;
-        }else {
-            level = 0;
-        }
+    public void level4() {
+        level = 1;
+    }
+
+    public void level1() {
+        level = 0;
     }
 
     @Override

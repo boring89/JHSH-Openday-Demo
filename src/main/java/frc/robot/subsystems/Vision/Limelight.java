@@ -13,7 +13,7 @@ public class Limelight extends SubsystemBase {
     private final NetworkTableEntry x, a;
     private double[] pose;
     private final PIDController xController, yController, rotController;
-    private double xOut, yOut, rotOut;
+    private double xOut, yOut, rotOut, setpoint;
 
     public Limelight() {
         Limelight = NetworkTableInstance.getDefault().getTable("limelight");
@@ -59,15 +59,19 @@ public class Limelight extends SubsystemBase {
         return rotOut;
     }
 
+    public void setPoint(double point) {
+        setpoint = point;
+    }
+
     @Override 
     public void periodic() {
         xOut = Math.abs(getX()) > 0.1
             ? MathUtil.clamp(xController.calculate(getX()), -0.5, 0.5)
             : 0;
-        yOut = Math.abs(getA() - 5) > 0.1
-            ? MathUtil.clamp(yController.calculate(getA(), 5), -0.5, 0.5)
+        yOut = Math.abs(getA() - setpoint) > 0.1
+            ? MathUtil.clamp(yController.calculate(getA(), setpoint), -0.5, 0.5)
             : 0;
-        rotOut = Math.abs(getPose()) > 0.1
+        rotOut = Math.abs(getPose()) > 0.05
             ? MathUtil.clamp(rotController.calculate(getPose()), -0.2, 0.2)
             : 0;
 

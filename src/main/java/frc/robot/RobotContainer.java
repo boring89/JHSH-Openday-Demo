@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.subsystems.Drivetain.SwerveSubsystem;
+import frc.robot.subsystems.Drivetrain.SwerveSubsystem;
 import frc.robot.subsystems.Mechanism.Elevator;
 import frc.robot.subsystems.Mechanism.Shooter;
 import frc.robot.subsystems.Vision.Limelight;
@@ -40,17 +40,32 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-
   private void configureButtonBindings() {
-    new POVButton(m_Joystick, 0).whileTrue(new SwerveJoystickCmd(
-      swerveSubsystem, 
-      () -> -limelight.yOut(), 
-      () -> limelight.xOut(), 
-      () -> limelight.rotOut(), 
-      () -> false));
+    new POVButton(m_Joystick, 0).onTrue(new InstantCommand(() ->limelight.setPoint(4))
+      .andThen(new SwerveJoystickCmd(
+        swerveSubsystem, 
+        () -> -limelight.yOut(), 
+        () -> limelight.xOut(), 
+        () -> limelight.rotOut(), 
+        () -> false)));
 
     new JoystickButton(m_Joystick, 1).whileTrue(
-      new InstantCommand(() -> elevator.changeLevel()));
+      new InstantCommand(() -> elevator.level4())
+      .andThen(new InstantCommand(() -> limelight.setPoint(5))
+      .andThen(new SwerveJoystickCmd(
+        swerveSubsystem,  
+        () -> -limelight.yOut(), 
+        () -> limelight.xOut(), 
+        () -> limelight.rotOut(), 
+        () -> false))))   
+    .onFalse(new InstantCommand(() -> limelight.setPoint(3))
+      .andThen(new SwerveJoystickCmd(
+        swerveSubsystem, 
+        () -> -limelight.yOut(), 
+        () -> limelight.xOut(), 
+        () -> limelight.rotOut(), 
+        () -> false).withTimeout(3)
+      .andThen(new InstantCommand(() -> elevator.level1()))));
     
     new JoystickButton(m_Joystick, 3).whileTrue(
       new InstantCommand(() -> shooter.shoot()))

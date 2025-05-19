@@ -22,7 +22,7 @@ public class Shooter extends SubsystemBase {
         ArmEncoder = ArmMotor.getEncoder();
         ShooterMotor = new SparkMax(16, MotorType.kBrushless);
         ArmController = new PIDController(0.2, 0, 0);
-        IRsensor = new AnalogInput(20);
+        IRsensor = new AnalogInput(7);
     }
 
     public double getPosition() {
